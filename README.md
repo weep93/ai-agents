@@ -1,5 +1,6 @@
 # ai-agents
 
+```text
 ┌─────────────────────────────────────────┐
 │              AI AGENTS                  │
 │                                         │
@@ -14,12 +15,11 @@
 │  Results                                │
 │  Future work                            │
 └─────────────────────────────────────────┘
+```
 
+This is a project I made to manage my home lab.
 
-This is an project I made to manage my home lab, 
-
-
-I built it because i regularly use different AI agents for different things, and I needed continuity as well as security across all my systems 
+I built it because I regularly use different AI agents for different things, and I needed continuity as well as security across all my systems.
 
 
 
