@@ -29,3 +29,32 @@ I built it because I regularly use different AI agents for different things, and
 - Configured API keys in .env 
 
 \(^o^)/ chat gpt crashed and gemeni is awful 
+
+
+# Overall Structure
+
+                       ┌── DeepSeek ─────── General
+                       │
+User → Task Router ────┼── Qwen3-Coder ──── Coding
+                       │
+                       └── Qwen3/DeepSeek ─ Security
+                                │
+                                ▼
+                     Hermes DeepSeek Judge
+                                │
+                                ▼
+                         Final Response
+
+
+for this im using Qwen3/deepseek 
+
+* Each agent is designed to not know about each other, to get the most unbiases normal anwser 
+
+
+
+[UPDATES]
+- rewrote old `main.py` it now uses openrouter for all 3 agents with different instructions 
+- updated `.env` with OPENROUTER keys
+
+[UP NEXT]
+- move personalities/instructions to /dev eventually 

@@ -1,30 +1,142 @@
-from google import genai
+import os
 
-client = genai.Client()
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-try:
+from dotenv import load_dotenv
 
-    response = client.interactions.create(
-        model = "gemini-3.8-flash",
-        input = "Write a short poem about the beauty of seeing the world")
-    print(response.output_text)
-except Exception as e:
-    print(f"An error occurred: {e}")
+from openai import OpenAI
+
+load_dotenv()
 
 
+# // config
 
-for step in response.step: 
-    if step.type == "thought": # if its actually thinkging + matters 
-        print("thinking...")
-        if step.summary: 
-            for content_block in step.summary: 
-                if content_block.type == "text":
-                    print(content_block.text) # tripple validation its not random ai bullshit
+WORKER_MODEL = "openrouter/free" # defining the AI model
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+)
 
 
-        elif step.type == "model_output": # checks for the actual anwser
-            print("model output...")
-            if step.summary: 
-                for content_block in step.summary: 
-                    if content_block.type == "text":
-                        print(content_block.text) # tripple validation its not random ai bullshit
+# defining the agents
+
+AGENTS = {
+    "general": """
+You are the general agent.
+
+Answer the users question to the best of your ability.
+Focus on general reasoning and accuracy.
+Do not make things up if you are unsure.
+""",
+
+    "coding": """
+You are the coding agent.
+
+Focus on programming, debugging, APIs, software,
+and technical implementation.
+
+Look for bugs and explain how to fix them.
+""",
+
+    "security": """
+You are the security agent.
+
+Focus on cybersecurity, networking, Linux,
+Windows, infrastructure, authentication,
+and security.
+
+Be technically accurate and point out
+security risks when relevant.
+"""
+}
+
+
+# defining the worker structure
+
+def run_agent(name, system_prompt, user_prompt):
+    try:
+        response = client.chat.completions.create(
+            model=WORKER_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+
+        return {
+            "agent": name,
+            "answer": response.choices[0].message.content,
+            "error": None
+        }
+
+    except Exception as e:
+        return {
+            "agent": name,
+            "answer": None,
+            "error": str(e)
+        }
+
+
+# running the agents
+
+def run_agents(user_prompt):
+    results = []
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+
+        futures = [
+            executor.submit(
+                run_agent,
+                name,
+                system_prompt,
+                user_prompt,
+            )
+            for name, system_prompt in AGENTS.items()
+        ]
+
+        for future in as_completed(futures):
+            results.append(future.result())
+
+    return results
+
+
+# main
+
+def main():
+
+    print(r"""
+  .-')                _  .-')  _  .-')                 (`\ .-') /` 
+ ( OO ).             ( \( -O )( \( -O )                 `.( OO ),' 
+(_)---\_) .-'),-----. ,------. ,------.  .-'),-----. ,--./  .--.   
+/    _ | ( OO'  .-.  '|   /`. '|   /`. '( OO'  .-.  '|      |  |   
+\  :` `. /   |  | |  ||  /  | ||  /  | |/   |  | |  ||  |   |  |,  
+ '..`''.)\_) |  |\|  ||  |_.' ||  |_.' |\_) |  |\|  ||  |.'.|  |_) 
+.-._)   \  \ |  | |  ||  .  '.'|  .  '.'  \ |  | |  ||         |   
+\       /   `'  '-'  '|  |\  \ |  |\  \    `'  '-'  '|   ,'.   |   
+ `-----'      `-----' `--' '--'`--' '--'     `-----' '--'   '--'   
+    """)
+
+    print("Multi Agent Starting...")
+
+    user_input = input("\ncupid: ")
+
+    print("\nAgents Thinking...")
+
+    results = run_agents(user_input)
+
+    for result in results:
+
+        print(f"\n==== {result['agent'].upper()} ====")
+
+        if result["error"]:
+            print("[ERROR]", result["error"])
+
+        else:
+            print(result["answer"])
+
+        print()
+
+
+if __name__ == "__main__":
+    main()
