@@ -32,7 +32,7 @@ I built it because I regularly use different AI agents for different things, and
 
 
 # Overall Structure
-
+```
                        ┌── DeepSeek ─────── General
                        │
 User → Task Router ────┼── Qwen3-Coder ──── Coding
@@ -44,7 +44,7 @@ User → Task Router ────┼── Qwen3-Coder ──── Coding
                                 │
                                 ▼
                          Final Response
-
+```
 
 for this im using Qwen3/deepseek 
 
