@@ -51,6 +51,10 @@ for this im using Qwen3/deepseek
 * Each agent is designed to not know about each other, to get the most unbiases normal anwser 
 
 
+[DEV LOGS]
+
+
+
 
 [UPDATES]
 - rewrote old `main.py` it now uses openrouter for all 3 agents with different instructions 
@@ -58,3 +62,61 @@ for this im using Qwen3/deepseek
 
 [UP NEXT]
 - move personalities/instructions to /dev eventually 
+
+
+
+[9/10/26]
+Determined further structure for the agents
+```
+ai-agents/
+|---main.py  runts to router > agents > judge
+|---core/ 
+|    |----router.py #decides which agent handles it 
+|    |----judge.py #where hermes is gonna live 
+|    |----memory.py # continuality
+|
+|---agents/
+|     |----coding.py security.py general.py
+|     |----agent.py # agent class base ???
+|
+|---memory/ (gitignore this)
+|---tools/ #this is for all agents tools 
+```
+
+
+[9/11/26]
+Added tools for security agent 
+- `get_logs.py` <-- restricted to safe commands
+
+
+# Added router and judge logic
+- added `router.py` #filters the prompts and sends it to the rigth agent 
+- added `judge.py` #takes the output and validates it from all agents
+
+
+
+
+\(^‿^)/
+
+[NEXT UP]
+- add more security tools to security agent (start with non invasive)
+- start researching other things to add 
+- trading agent ??? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
